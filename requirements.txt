@@ -1,0 +1,5 @@
+pandas
+jupyter
+mido
+torch
+python-rtmidi
