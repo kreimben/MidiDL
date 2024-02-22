@@ -2,7 +2,10 @@ import lightning as L
 import optuna
 import torch
 from optuna.integration import PyTorchLightningPruningCallback
+from torch.utils.data import DataLoader
 
+from midi2vec.train import load_trained_node
+from model.dataset import Node2vecDataset
 from model.lightning_module import MusicGeneratorModel
 
 
@@ -18,12 +21,17 @@ def objective(trial):
     # Define PyTorch Lightning trainer
     trainer = L.Trainer(
         max_epochs=10,
-        gpus=1 if torch.cuda.is_available() else None,
-        callbacks=[PyTorchLightningPruningCallback(trial, monitor="loss")],
+        callbacks=[PyTorchLightningPruningCallback(trial, monitor="loss")]
     )
 
+    _, G = load_trained_node()
+
+    # Convert your trained node2vec embedding to a dataset
+    node2vec_dataset = Node2vecDataset(G)  # replace `labels` with your actual labels
+    dataloader = DataLoader(node2vec_dataset, batch_size=64, shuffle=True)
+
     # Train the model
-    trainer.fit(model)
+    trainer.fit(model, dataloader)
 
     return trainer.callback_metrics["train_loss"].item()
 

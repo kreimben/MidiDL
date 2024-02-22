@@ -17,19 +17,16 @@ class MusicGeneratorModel(L.LightningModule):
         )
         self.criterion = nn.CrossEntropyLoss()
 
+    def forward(self, z):
+        return self.generator(z)
 
-def forward(self, z):
-    return self.generator(z)
+    def training_step(self, batch, batch_idx):
+        z, targets = batch
+        generated_music = self(z)
+        loss = self.criterion(generated_music, targets)
+        self.log("train_loss", loss)
+        return loss
 
-
-def training_step(self, batch, batch_idx):
-    z, targets = batch
-    generated_music = self(z)
-    loss = self.criterion(generated_music, targets)
-    self.log("train_loss", loss)
-    return loss
-
-
-def configure_optimizers(self):
-    optimizer = torch.optim.Adam(self.parameters(), self.learning_rate)
-    return optimizer
+    def configure_optimizers(self):
+        optimizer = torch.optim.Adam(self.parameters(), self.learning_rate)
+        return optimizer
