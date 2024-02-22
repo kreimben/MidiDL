@@ -2,4 +2,11 @@ pandas
 jupyter
 mido
 torch
+lightning
+optuna
 python-rtmidi
+gensim
+icecream
+node2vec
+networkx
+matplotlib
